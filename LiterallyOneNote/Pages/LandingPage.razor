@@ -9,7 +9,10 @@
 <MudText Align="@Align.Center" Typo="@Typo.subtitle1">*for legal reasons</MudText>
 
 <MudTextField T="string"
-    @bind-Text="@Note"
+              @bind-Text="@Note"
+              Lines="5"
+              Variant="@Variant.Outlined"
+              Co
     Immediate/>
 
 @code {
