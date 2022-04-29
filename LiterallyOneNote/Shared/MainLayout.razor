@@ -1,0 +1,80 @@
+﻿@using Blazored.LocalStorage
+@inherits LayoutComponentBase
+
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode"/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudText Typo="Typo.h5" Class="ml-3">Literally One Note</MudText>
+
+        <MudSpacer/>
+
+        <MudIconButton Icon="@ThemeButtonIcon" Color="Color.Inherit" OnClick="@ToggleTheme"/>
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" OnClick="@OpenGithub"/>
+    </MudAppBar>
+    <MudMainContent>
+
+        <MudContainer>
+            @Body
+        </MudContainer>
+        
+        <MudScrollToTop>
+            <MudFab Color="Color.Tertiary" Icon="@Icons.Filled.ArrowCircleUp"/>
+        </MudScrollToTop>
+    </MudMainContent>
+</MudLayout>
+
+@code{
+
+    private bool _isDarkMode;
+    private MudThemeProvider _mudThemeProvider = null!;
+    private bool _hasDarkModeFromLocalStorage;
+
+    [Inject]
+    public ILocalStorageService LocalStorageService { get; set; } = null!;
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = null!;
+
+    [Inject]
+    public IJSRuntime JsRuntime { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        
+        _hasDarkModeFromLocalStorage = await LocalStorageService.ContainKeyAsync("isDarkMode");
+        
+        _isDarkMode = await LocalStorageService.GetItemAsync<bool>("isDarkMode");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (!_hasDarkModeFromLocalStorage)
+            {
+                _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+            }
+            
+            StateHasChanged();
+        }
+    }
+
+    private async Task ToggleTheme()
+    {
+        _isDarkMode = !_isDarkMode;
+        await LocalStorageService.SetItemAsync("isDarkMode", _isDarkMode);
+    }
+
+    private string ThemeButtonIcon => _isDarkMode
+        ? Icons.Material.Filled.DarkMode
+        : Icons.Material.Filled.LightMode;
+
+    private async Task OpenGithub()
+    {
+        await JsRuntime.InvokeAsync<object>("open", "https://github.com", "_blank");
+    }
+}

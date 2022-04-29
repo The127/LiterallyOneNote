@@ -1,0 +1,61 @@
+﻿@using Blazored.LocalStorage
+@using LiterallyOneNote.Annotations
+@using System.ComponentModel
+@using System.Runtime.CompilerServices
+@implements System.ComponentModel.INotifyPropertyChanged
+@implements IDisposable
+
+<MudText Align="@Align.Center" Typo="@Typo.h1">Literally* One Note</MudText>
+<MudText Align="@Align.Center" Typo="@Typo.subtitle1">*for legal reasons</MudText>
+
+<MudTextField T="string"
+    @bind-Text="@Note"
+    Immediate/>
+
+@code {
+
+    [Inject]
+    public ILocalStorageService LocalStorageService { get; set; } = null!;
+    
+    private string _note = "";
+
+    private string Note
+    {
+        get => _note;
+        set
+        {
+            if (value == _note) return;
+            _note = value;
+            
+    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if(value != null) OnPropertyChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        
+        PropertyChanged += OnNoteChanged;
+        
+        Note = await LocalStorageService.GetItemAsStringAsync("Note");
+    }
+
+    private async void OnNoteChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        await LocalStorageService.SetItemAsStringAsync("Note", Note);
+    }
+
+    public void Dispose()
+    {
+        PropertyChanged -= OnNoteChanged;
+    }
+    
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    [NotifyPropertyChangedInvocator]
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+}
