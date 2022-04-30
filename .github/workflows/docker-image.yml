@@ -19,11 +19,7 @@ jobs:
     - name: test 2
       run: ls
     - name: test 3
-      run: cd LiterallyOneNote
-    - name: test 4
-      run: pwd
-    - name: test 5
-      run: ls
+      run: cd LiterallyOneNote && pwd && ls
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag literallyonenote:$(date +%s)
 
