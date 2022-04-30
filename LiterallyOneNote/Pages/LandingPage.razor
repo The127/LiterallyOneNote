@@ -6,20 +6,28 @@
 @implements IDisposable
 
 <MudText Align="@Align.Center" Typo="@Typo.h1">Literally* One Note</MudText>
-<MudText Align="@Align.Center" Typo="@Typo.subtitle1">*for legal reasons</MudText>
+<MudText Align="@Align.Center" Typo="@Typo.subtitle1">(*for legal reasons)</MudText>
+
+<MudText Class="my-5" Align="@Align.Center" Typo="@Typo.h5">The website for all your single note taking needs!</MudText>
 
 <MudTextField T="string"
               @bind-Text="@Note"
               Lines="5"
               Variant="@Variant.Outlined"
-              Co
-    Immediate/>
+              Immediate/>
+
+<MudText Class="my-5" Align="@Align.Center" Typo="@Typo.subtitle2">
+    Users that enjoyed this website also enjoyed:
+    <i>
+        <a href="https://note.maiker.de">Single Note</a>
+    </i>
+</MudText>
 
 @code {
 
     [Inject]
     public ILocalStorageService LocalStorageService { get; set; } = null!;
-    
+
     private string _note = "";
 
     private string Note
@@ -29,18 +37,18 @@
         {
             if (value == _note) return;
             _note = value;
-            
+
     // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            if(value != null) OnPropertyChanged();
+            if (value != null) OnPropertyChanged();
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        
+
         PropertyChanged += OnNoteChanged;
-        
+
         Note = await LocalStorageService.GetItemAsStringAsync("Note");
     }
 
@@ -53,7 +61,7 @@
     {
         PropertyChanged -= OnNoteChanged;
     }
-    
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     [NotifyPropertyChangedInvocator]
@@ -61,4 +69,5 @@
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
 }
