@@ -14,12 +14,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: test
-      run: pwd
-    - name: test 2
-      run: ls
-    - name: test 3
-      run: cd LiterallyOneNote && pwd && ls
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag literallyonenote:$(date +%s)
+      run: cd LiterallyOneNote &&  docker build . --file Dockerfile --tag literallyonenote:$(date +%s)
 
