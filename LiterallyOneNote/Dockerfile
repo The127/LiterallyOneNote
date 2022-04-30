@@ -5,8 +5,8 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["LiterallyOneNote/LiterallyOneNote.csproj", "LiterallyOneNote/"]
-RUN dotnet restore "LiterallyOneNote/LiterallyOneNote.csproj"
+COPY ["LiterallyOneNote.csproj", "LiterallyOneNote/"]
+RUN dotnet restore "LiterallyOneNote.csproj"
 COPY . .
 WORKDIR "/src/LiterallyOneNote"
 RUN dotnet build "LiterallyOneNote.csproj" -c Release -o /app/build
